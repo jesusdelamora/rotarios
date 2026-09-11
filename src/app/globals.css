@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  /* Paleta oficial de Rotary International */
+  --color-rotary-blue: #17458f;
+  --color-rotary-blue-dark: #0f3168;
+  --color-rotary-gold: #f7a81b;
+  --color-rotary-gold-dark: #d98f0a;
+  --color-rotary-azure: #0067c8;
+  --color-rotary-sky: #019fcb;
+  --color-rotary-cranberry: #d41367;
+  --color-rotary-grass: #009739;
+  --color-rotary-gray: #54565a;
+  --color-rotary-gray-light: #f4f4f4;
+  --color-rotary-gray-mid: #d9d9d6;
+
+  --font-sans: var(--font-open-sans), "Open Sans", Arial, Helvetica, sans-serif;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-rotary-gray-light);
+  color: #1f2124;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}

@@ -1,24 +1,29 @@
-# Dependencias
-node_modules/
-vendor/
-__pycache__/
-*.pyc
-.venv/
+# dependencias
+/node_modules
+/.pnp
+.pnp.*
 
-# Builds
-dist/
-build/
-out/
-.next/
+# next.js
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
 
-# Entorno y secretos
-.env
-.env.*
+# base de datos local
+local.db
+local.db-*
+
+# entorno y secretos
+.env*
 !.env.example
 
-# Sistema / editores
+# vercel
+.vercel
+
+# sistema / editores
 .DS_Store
-Thumbs.db
+*.pem
 .idea/
 .vscode/
-*.log
+npm-debug.log*
