@@ -30,7 +30,7 @@ Rutas:
 | `/admin/resumenes` | Generar y consultar resúmenes (imprimibles a PDF) |
 | `/api/admin/export` | Exportar todas las respuestas a CSV |
 
-Para empezar de cero en local: borra `local.db` y vuelve a correr `npm run db:push`.
+Para empezar de cero en local: borra `local.db`; las tablas se vuelven a crear solas (o corre `npm run db:push`).
 
 ## Variables de entorno
 
@@ -43,16 +43,13 @@ Para empezar de cero en local: borra `local.db` y vuelve a correr `npm run db:pu
 
 ## Deploy en Vercel
 
-1. Crear la base `rotarios` en la integración de Turso del equipo en Vercel y conectarla al proyecto
-   (inyecta `TURSO_DATABASE_URL` y `TURSO_AUTH_TOKEN`).
-2. Agregar `ADMIN_PASSWORD` y `SESSION_SECRET` en las variables de entorno del proyecto.
-3. Crear las tablas en Turso una sola vez, desde tu máquina:
+Producción: https://rotarios-henna.vercel.app (proyecto `rotarios`, equipo dyceasoftware). Cada push a `main` despliega.
 
-   ```bash
-   TURSO_DATABASE_URL=libsql://... TURSO_AUTH_TOKEN=... npm run db:push
-   ```
-
-4. `vercel --prod` o push a `main`.
+1. La base es una Turso creada desde la integración de Vercel (Storage). La integración inyecta
+   `TURSO_DATABASE_URL` y `TURSO_AUTH_TOKEN`; están marcadas como sensibles y no se pueden descargar con `vercel env pull`.
+2. `ADMIN_PASSWORD` y `SESSION_SECRET` se configuran en las variables de entorno del proyecto.
+3. Las tablas se crean solas en el primer acceso a la base (`ensureSchema` en `src/db/index.ts`), así que no hace
+   falta correr `db:push` contra Turso. Si cambias `src/db/schema.ts`, actualiza también el SQL de `ensureSchema`.
 
 ## Regla de diagnóstico
 

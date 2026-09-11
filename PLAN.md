@@ -90,7 +90,7 @@ Resumen     id, creadoEn, titulo, desde?, hasta?, totalRespuestas, contenido (JS
 
 ## 7. Fases de trabajo
 
-Estado: fases 1–4 terminadas y probadas en local (11 sep 2026). Pendiente la fase 5.
+Estado: fases 1–5 terminadas (11 sep 2026). Producción en https://rotarios-henna.vercel.app. Opcional pendiente: fase 6.
 
 1. **Base**: crear proyecto Next.js, Tailwind con paleta Rotary, layout con logo y nombre del club, Drizzle con SQLite local.
 2. **Formulario público**: datos de la encuesta, wizard de 5 pasos, guardado y página de gracias.
