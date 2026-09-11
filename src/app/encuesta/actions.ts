@@ -29,15 +29,20 @@ export async function enviarRespuesta(payload: EnvioEncuesta): Promise<{ error?:
     com[s.id] = data.comentarios[s.id] ?? "";
   }
 
-  await ensureSchema();
-  await db.insert(respuestas).values({
-    id: crypto.randomUUID(),
-    creadoEn: new Date(),
-    nombre: data.nombre || null,
-    cargo: data.cargo || null,
-    respuestas: JSON.stringify(resp),
-    comentarios: JSON.stringify(com),
-  });
+  try {
+    await ensureSchema();
+    await db.insert(respuestas).values({
+      id: crypto.randomUUID(),
+      creadoEn: new Date(),
+      nombre: data.nombre || null,
+      cargo: data.cargo || null,
+      respuestas: JSON.stringify(resp),
+      comentarios: JSON.stringify(com),
+    });
+  } catch (e) {
+    console.error("Error al guardar la respuesta:", e);
+    return { error: "No se pudo guardar tu respuesta. Intenta de nuevo en un momento." };
+  }
 
   redirect("/gracias");
 }

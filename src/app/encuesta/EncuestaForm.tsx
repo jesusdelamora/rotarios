@@ -1,24 +1,66 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { SECCIONES, ITEMS_POR_SECCION, MAX_SIN_MARCAR } from "@/data/encuesta";
 import { Button, Card, Input, Textarea } from "@/components/ui";
 import { enviarRespuesta } from "./actions";
 
 type Paso = number; // 0 = datos, 1..5 = secciones, 6 = revisión
 
+export const BORRADOR_KEY = "rotarios_encuesta_borrador";
+
+type Borrador = {
+  paso: number;
+  nombre: string;
+  cargo: string;
+  respuestas: Record<string, boolean[]>;
+  comentarios: Record<string, string>;
+};
+
+function leerBorrador(): Borrador | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(BORRADOR_KEY);
+    return raw ? (JSON.parse(raw) as Borrador) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function EncuestaForm() {
-  const [paso, setPaso] = useState<Paso>(0);
-  const [nombre, setNombre] = useState("");
-  const [cargo, setCargo] = useState("");
+  // Este componente se carga sin SSR (ver EncuestaCargador), así que puede leer
+  // el borrador de localStorage al inicializar el estado.
+  const [borrador] = useState<Borrador | null>(() => leerBorrador());
+  const [paso, setPaso] = useState<Paso>(() =>
+    Math.min(Math.max(borrador?.paso ?? 0, 0), SECCIONES.length + 1),
+  );
+  const [nombre, setNombre] = useState(borrador?.nombre ?? "");
+  const [cargo, setCargo] = useState(borrador?.cargo ?? "");
   const [respuestas, setRespuestas] = useState<Record<string, boolean[]>>(() =>
-    Object.fromEntries(SECCIONES.map((s) => [s.id, Array(ITEMS_POR_SECCION).fill(false)])),
+    Object.fromEntries(
+      SECCIONES.map((s) => {
+        const guardado = borrador?.respuestas?.[s.id];
+        const arr = Array.isArray(guardado) ? guardado.slice(0, ITEMS_POR_SECCION).map(Boolean) : [];
+        while (arr.length < ITEMS_POR_SECCION) arr.push(false);
+        return [s.id, arr];
+      }),
+    ),
   );
   const [comentarios, setComentarios] = useState<Record<string, string>>(() =>
-    Object.fromEntries(SECCIONES.map((s) => [s.id, ""])),
+    Object.fromEntries(SECCIONES.map((s) => [s.id, borrador?.comentarios?.[s.id] ?? ""])),
   );
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  // Guarda el borrador en cada cambio.
+  useEffect(() => {
+    try {
+      const b: Borrador = { paso, nombre, cargo, respuestas, comentarios };
+      window.localStorage.setItem(BORRADOR_KEY, JSON.stringify(b));
+    } catch {
+      /* sin almacenamiento disponible: no pasa nada */
+    }
+  }, [paso, nombre, cargo, respuestas, comentarios]);
 
   const totalPasos = SECCIONES.length + 2;
   const progreso = Math.round((paso / (totalPasos - 1)) * 100);
@@ -34,8 +76,20 @@ export function EncuestaForm() {
   function enviar() {
     setError(null);
     startTransition(async () => {
-      const res = await enviarRespuesta({ nombre, cargo, respuestas, comentarios });
-      if (res?.error) setError(res.error);
+      try {
+        const res = await enviarRespuesta({ nombre, cargo, respuestas, comentarios });
+        if (res?.error) setError(res.error);
+      } catch (e) {
+        // Si la app se actualizó mientras el formulario estaba abierto, la acción
+        // del servidor ya no existe. Las respuestas están guardadas en el borrador:
+        // basta con recargar y volver a enviar.
+        const msg = e instanceof Error ? e.message : "";
+        if (/server action|failed to find|not found/i.test(msg)) {
+          window.location.reload();
+          return;
+        }
+        setError("No se pudo enviar la encuesta. Tus respuestas están guardadas; revisa tu conexión e intenta de nuevo.");
+      }
     });
   }
 
@@ -161,7 +215,14 @@ export function EncuestaForm() {
               );
             })}
           </ul>
-          {error && <p className="mt-4 text-sm text-rotary-cranberry font-semibold">{error}</p>}
+          {error && (
+            <div className="mt-4 rounded-md border border-rotary-cranberry bg-pink-50 p-3 text-sm">
+              <p className="font-semibold text-rotary-cranberry">{error}</p>
+              <button type="button" className="mt-1 text-rotary-azure underline" onClick={() => window.location.reload()}>
+                Recargar la página (se conservan tus respuestas)
+              </button>
+            </div>
+          )}
           <div className="mt-6 flex justify-between">
             <Button type="button" variant="outline" onClick={() => irA(paso - 1)} disabled={pending}>
               Atrás

@@ -1,9 +1,11 @@
 import { CLUB } from "@/data/encuesta";
 import { ButtonLink, Card } from "@/components/ui";
+import { LimpiarBorrador } from "./LimpiarBorrador";
 
 export default function Gracias() {
   return (
     <div className="mx-auto max-w-xl px-4 py-16 text-center">
+      <LimpiarBorrador />
       <Card>
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rotary-gold text-3xl">
           ✓
