@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { SECCIONES, ITEMS_POR_SECCION, MAX_SIN_MARCAR } from "@/data/encuesta";
 import { Button, Card, Input, Textarea } from "@/components/ui";
 import { enviarRespuesta } from "./actions";
@@ -51,6 +52,7 @@ export function EncuestaForm() {
   );
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   // Guarda el borrador en cada cambio.
   useEffect(() => {
@@ -78,7 +80,11 @@ export function EncuestaForm() {
     startTransition(async () => {
       try {
         const res = await enviarRespuesta({ nombre, cargo, respuestas, comentarios });
-        if (res?.error) setError(res.error);
+        if ("error" in res) {
+          setError(res.error);
+          return;
+        }
+        router.push("/gracias");
       } catch (e) {
         // Si la app se actualizó mientras el formulario estaba abierto, la acción
         // del servidor ya no existe. Las respuestas están guardadas en el borrador:

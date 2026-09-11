@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { redirect } from "next/navigation";
 import { db, ensureSchema } from "@/db";
 import { respuestas } from "@/db/schema";
 import { SECCIONES, ITEMS_POR_SECCION } from "@/data/encuesta";
@@ -15,7 +14,7 @@ const schema = z.object({
 
 export type EnvioEncuesta = z.infer<typeof schema>;
 
-export async function enviarRespuesta(payload: EnvioEncuesta): Promise<{ error?: string }> {
+export async function enviarRespuesta(payload: EnvioEncuesta): Promise<{ ok: true } | { error: string }> {
   const parsed = schema.safeParse(payload);
   if (!parsed.success) return { error: "Los datos de la encuesta no son válidos." };
   const data = parsed.data;
@@ -44,5 +43,5 @@ export async function enviarRespuesta(payload: EnvioEncuesta): Promise<{ error?:
     return { error: "No se pudo guardar tu respuesta. Intenta de nuevo en un momento." };
   }
 
-  redirect("/gracias");
+  return { ok: true };
 }
