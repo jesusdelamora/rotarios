@@ -43,7 +43,7 @@ Para empezar de cero en local: borra `local.db`; las tablas se vuelven a crear s
 
 ## Deploy en Vercel
 
-Producción: https://rotarios-saltillo.vercel.app (proyecto `rotarios`, equipo dyceasoftware). Cada push a `main` despliega.
+Producción: https://rotarios-crsi.vercel.app (proyecto `rotarios`, equipo dyceasoftware). Cada push a `main` despliega.
 
 1. La base es una Turso creada desde la integración de Vercel (Storage). La integración inyecta
    `TURSO_DATABASE_URL` y `TURSO_AUTH_TOKEN`; están marcadas como sensibles y no se pueden descargar con `vercel env pull`.
