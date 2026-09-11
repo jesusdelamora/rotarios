@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-// Rueda de Rotary sobre fondo azul Rotary, para iOS (pantalla de inicio).
+// Rueda de Rotary con fondo transparente, para iOS (pantalla de inicio).
 export default function AppleIcon() {
   const teeth = Array.from({ length: 24 }, (_, i) => i * 15);
   const spokes = Array.from({ length: 6 }, (_, i) => i * 60);
@@ -16,10 +16,10 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#17458f",
+          background: "transparent",
         }}
       >
-        <svg width="160" height="160" viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg">
+        <svg width="176" height="176" viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg">
           <g fill="#f7a81b">
             {teeth.map((a) => (
               <rect key={a} x="-5" y="-48" width="10" height="12" transform={`rotate(${a})`} />
