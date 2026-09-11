@@ -4,6 +4,7 @@ import { getRespuestas } from "@/lib/queries";
 import { puntajeSeccion, requiereAtencion, formatoFechaHora } from "@/lib/stats";
 import { SECCIONES } from "@/data/encuesta";
 import { Card } from "@/components/ui";
+import { BorrarTodas } from "./BorrarTodas";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,10 @@ export default async function RespuestasPage() {
   const rs = await getRespuestas();
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-rotary-blue">Respuestas ({rs.length})</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold text-rotary-blue">Respuestas ({rs.length})</h1>
+        <BorrarTodas total={rs.length} />
+      </div>
       <Card className="overflow-x-auto p-0">
         <table className="w-full text-sm">
           <thead className="bg-rotary-gray-light text-left text-xs uppercase text-rotary-gray">

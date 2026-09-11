@@ -51,6 +51,15 @@ export async function eliminarRespuesta(formData: FormData) {
   redirect("/admin/respuestas");
 }
 
+export async function eliminarTodasLasRespuestas(formData: FormData) {
+  await assertAdmin();
+  if (String(formData.get("confirmar") ?? "") !== "BORRAR") return;
+  await ensureSchema();
+  await db.delete(respuestas);
+  revalidatePath("/admin");
+  redirect("/admin/respuestas");
+}
+
 function parseFecha(v: FormDataEntryValue | null, finDeDia = false): Date | undefined {
   const s = String(v ?? "").trim();
   if (!s) return undefined;
