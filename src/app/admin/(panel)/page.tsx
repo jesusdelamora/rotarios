@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { getRespuestas } from "@/lib/queries";
 import { calcularEstadisticas, formatoFecha } from "@/lib/stats";
-import { ITEMS_POR_SECCION, MAX_SIN_MARCAR } from "@/data/encuesta";
+import { ITEMS_POR_SECCION } from "@/data/encuesta";
 import { Barra, Card, Pill, nivelSeccion, ButtonLink } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
@@ -34,9 +34,6 @@ export default async function Dashboard() {
             <p>
               <span className="font-bold text-rotary-cranberry">Áreas que requieren atención: </span>
               {stats.areasAtencion.join(", ")}.
-              <span className="block text-xs text-rotary-gray mt-1">
-                Regla de la encuesta: una sección con más de {MAX_SIN_MARCAR} casillas sin marcar debe atenderse.
-              </span>
             </p>
           ) : (
             <p className="font-bold text-rotary-grass">Ninguna sección requiere atención según el promedio del club.</p>

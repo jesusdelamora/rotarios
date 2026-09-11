@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { getResumen } from "@/lib/queries";
 import { formatoFecha, formatoFechaHora, type Estadisticas } from "@/lib/stats";
-import { CLUB, TITULO_ENCUESTA, ITEMS_POR_SECCION, MAX_SIN_MARCAR } from "@/data/encuesta";
+import { CLUB, TITULO_ENCUESTA, ITEMS_POR_SECCION } from "@/data/encuesta";
 import { RotaryLogo } from "@/components/RotaryLogo";
 import { Barra, Button, ButtonLink, Card, Pill, nivelSeccion } from "@/components/ui";
 import { PrintButton } from "@/components/PrintButton";
@@ -61,10 +61,6 @@ export default async function ResumenPage({ params }: { params: Promise<{ id: st
         ) : (
           <p className="mt-1 font-semibold text-rotary-grass">Ninguna sección requiere atención según el promedio del club.</p>
         )}
-        <p className="mt-1 text-xs text-rotary-gray">
-          Regla de la encuesta: una sección con más de {MAX_SIN_MARCAR} casillas sin marcar (promedio menor a{" "}
-          {ITEMS_POR_SECCION - MAX_SIN_MARCAR}) debe atenderse.
-        </p>
       </Card>
 
       <Card>
