@@ -117,9 +117,6 @@ export function EncuestaForm() {
             </ul>
             <p className="mt-2 text-xs text-rotary-gray">
               {marcadas} de {ITEMS_POR_SECCION} marcadas
-              {ITEMS_POR_SECCION - marcadas > MAX_SIN_MARCAR && (
-                <span className="text-rotary-cranberry font-semibold"> · esta área requiere atención</span>
-              )}
             </p>
             <label className="mt-5 block">
               <span className="text-sm font-semibold">Comentarios (opcional)</span>
