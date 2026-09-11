@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { redirect } from "next/navigation";
-import { db } from "@/db";
+import { db, ensureSchema } from "@/db";
 import { respuestas } from "@/db/schema";
 import { SECCIONES, ITEMS_POR_SECCION } from "@/data/encuesta";
 
@@ -29,6 +29,7 @@ export async function enviarRespuesta(payload: EnvioEncuesta): Promise<{ error?:
     com[s.id] = data.comentarios[s.id] ?? "";
   }
 
+  await ensureSchema();
   await db.insert(respuestas).values({
     id: crypto.randomUUID(),
     creadoEn: new Date(),

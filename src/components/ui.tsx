@@ -37,6 +37,7 @@ export function Barra({
 /** Semáforo por sección según el promedio (0–15). */
 export function nivelSeccion(promedio: number, requiereAtencion: boolean) {
   if (requiereAtencion) return { etiqueta: "Atender", color: "bg-rotary-cranberry", texto: "text-rotary-cranberry" };
+  if (promedio === 0) return { etiqueta: "Sin datos", color: "bg-rotary-gray", texto: "text-rotary-gray" };
   if (promedio < 12) return { etiqueta: "Mejorable", color: "bg-rotary-gold", texto: "text-rotary-gold-dark" };
   return { etiqueta: "Saludable", color: "bg-rotary-grass", texto: "text-rotary-grass" };
 }

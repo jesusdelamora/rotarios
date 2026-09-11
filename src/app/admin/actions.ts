@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
+import { db, ensureSchema } from "@/db";
 import { respuestas, resumenes } from "@/db/schema";
 import { assertAdmin } from "@/lib/auth";
 import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/session";
@@ -38,6 +38,7 @@ export async function eliminarRespuesta(formData: FormData) {
   await assertAdmin();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
+  await ensureSchema();
   await db.delete(respuestas).where(eq(respuestas.id, id));
   revalidatePath("/admin");
   redirect("/admin/respuestas");
@@ -64,6 +65,7 @@ export async function generarResumen(_prev: { error?: string } | undefined, form
     tituloForm ||
     `Resumen ${new Date().toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" })}`;
   const id = crypto.randomUUID();
+  await ensureSchema();
   await db.insert(resumenes).values({
     id,
     creadoEn: new Date(),
@@ -81,6 +83,7 @@ export async function eliminarResumen(formData: FormData) {
   await assertAdmin();
   const id = String(formData.get("id") ?? "");
   if (!id) return;
+  await ensureSchema();
   await db.delete(resumenes).where(eq(resumenes.id, id));
   revalidatePath("/admin/resumenes");
   redirect("/admin/resumenes");
