@@ -1,0 +1,24 @@
+# Dependencias
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+.venv/
+
+# Builds
+dist/
+build/
+out/
+.next/
+
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
