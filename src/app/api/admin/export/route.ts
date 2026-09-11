@@ -6,8 +6,10 @@ import { SECCIONES } from "@/data/encuesta";
 export const dynamic = "force-dynamic";
 
 function celda(v: unknown): string {
-  const s = v == null ? "" : String(v);
-  return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  let s = v == null ? "" : String(v);
+  // Neutraliza inyección de fórmulas (=, +, -, @, tab, CR) al abrir el CSV en Excel/Sheets.
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return /[",\n\r;]/.test(s) || s.startsWith("'") ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 export async function GET() {
