@@ -12,13 +12,20 @@ import { getRespuestas } from "@/lib/queries";
 import { calcularEstadisticas } from "@/lib/stats";
 
 export async function login(_prev: { error?: string } | undefined, formData: FormData) {
-  const password = String(formData.get("password") ?? "");
-  const esperado = process.env.ADMIN_PASSWORD;
+  const password = String(formData.get("password") ?? "").trim();
+  const esperado = (process.env.ADMIN_PASSWORD ?? "").trim();
   if (!esperado) return { error: "ADMIN_PASSWORD no está configurado en el servidor." };
   if (password !== esperado) return { error: "Password incorrecto." };
 
+  let token: string;
+  try {
+    token = await createSessionToken();
+  } catch (e) {
+    console.error("No se pudo crear la sesión:", e);
+    return { error: "El servidor no tiene configurado SESSION_SECRET. Revisa las variables de entorno en Vercel." };
+  }
   const store = await cookies();
-  store.set(SESSION_COOKIE, await createSessionToken(), {
+  store.set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

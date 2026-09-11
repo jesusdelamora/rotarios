@@ -6,7 +6,8 @@ export const SESSION_COOKIE = "rotarios_admin";
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 días
 
 function secret(): string {
-  const s = process.env.SESSION_SECRET ?? process.env.ADMIN_PASSWORD;
+  // Un SESSION_SECRET vacío (por ejemplo, creado sin valor en Vercel) cae al ADMIN_PASSWORD.
+  const s = (process.env.SESSION_SECRET || process.env.ADMIN_PASSWORD || "").trim();
   if (!s) throw new Error("Falta SESSION_SECRET o ADMIN_PASSWORD en el entorno");
   return s;
 }
