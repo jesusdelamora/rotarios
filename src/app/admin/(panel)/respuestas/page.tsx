@@ -5,6 +5,7 @@ import { puntajeSeccion, requiereAtencion, formatoFechaHora } from "@/lib/stats"
 import { SECCIONES } from "@/data/encuesta";
 import { Card } from "@/components/ui";
 import { BorrarTodas } from "./BorrarTodas";
+import { BorrarFila } from "./BorrarFila";
 
 export const dynamic = "force-dynamic";
 
@@ -29,12 +30,13 @@ export default async function RespuestasPage() {
                 </th>
               ))}
               <th className="px-4 py-2 text-center">Total</th>
+              <th className="px-2 py-2"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-rotary-gray-mid">
             {rs.length === 0 && (
               <tr>
-                <td colSpan={SECCIONES.length + 3} className="px-4 py-6 text-center text-rotary-gray">
+                <td colSpan={SECCIONES.length + 4} className="px-4 py-6 text-center text-rotary-gray">
                   Aún no hay respuestas.
                 </td>
               </tr>
@@ -62,15 +64,15 @@ export default async function RespuestasPage() {
                     </td>
                   ))}
                   <td className="px-4 py-2 text-center font-bold">{total}/75</td>
+                  <td className="px-2 py-2 text-right">
+                    <BorrarFila id={r.id} etiqueta={`${r.nombre ?? "Anónimo"} (${formatoFechaHora(r.creadoEn)})`} />
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       </Card>
-      <p className="text-xs text-rotary-gray">
-        S1–S5: casillas marcadas por sección (máximo 15). En rojo las secciones con más de 5 sin marcar.
-      </p>
     </div>
   );
 }
