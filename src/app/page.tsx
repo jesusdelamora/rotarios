@@ -1,41 +1,71 @@
-import { CLUB, INTRO, SECCIONES, TITULO_ENCUESTA, ANIO } from "@/data/encuesta";
-import { ButtonLink, Card } from "@/components/ui";
+import Link from "next/link";
+import { CLUB } from "@/data/encuesta";
+
+const APPS = [
+  {
+    href: "/encuesta",
+    titulo: "Encuesta",
+    descripcion: "Encuesta sobre la salud del club. Responde en unos 10 minutos.",
+    color: "bg-rotary-blue",
+    icono: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-10 w-10 sm:h-12 sm:w-12">
+        <rect x="5" y="3" width="14" height="18" rx="2" />
+        <path d="M9 3.5h6v2H9z" fill="currentColor" stroke="none" />
+        <path d="M8.5 11l2 2 4-4" />
+        <path d="M8.5 16.5h7" />
+      </svg>
+    ),
+  },
+  {
+    href: "/aprender",
+    titulo: "Ver para aprender",
+    descripcion: "Videos y materiales para conocer más sobre Rotary.",
+    color: "bg-rotary-gold",
+    icono: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-10 w-10 sm:h-12 sm:w-12">
+        <rect x="3" y="5" width="18" height="13" rx="2" />
+        <path d="M10 9l5 2.5-5 2.5z" fill="currentColor" stroke="none" />
+        <path d="M8 21h8" />
+      </svg>
+    ),
+  },
+] as const;
 
 export default function Home() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
-      <div className="text-center mb-8">
-        <p className="uppercase tracking-widest text-rotary-gold-dark font-semibold text-sm">
-          {CLUB}
-        </p>
-        <h1 className="text-3xl md:text-4xl font-bold text-rotary-blue mt-2">
-          {TITULO_ENCUESTA} {ANIO}
-        </h1>
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
+      <div className="mb-6 text-center">
+        <p className="text-xs uppercase tracking-widest text-rotary-gold-dark font-semibold">Bienvenido</p>
+        <h1 className="mt-1 text-2xl sm:text-4xl font-bold text-rotary-blue">{CLUB}</h1>
+        <p className="mt-2 text-sm text-rotary-gray">¿Qué quieres hacer hoy?</p>
       </div>
-      <Card>
-        <p className="text-rotary-gray leading-relaxed">{INTRO}</p>
-        <h2 className="mt-6 font-bold text-rotary-blue">La encuesta tiene 5 secciones:</h2>
-        <ol className="mt-2 grid gap-2 sm:grid-cols-2">
-          {SECCIONES.map((s, i) => (
-            <li key={s.id} className="flex items-center gap-3 rounded-md bg-rotary-gray-light px-3 py-2">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rotary-gold font-bold text-rotary-blue-dark text-sm">
-                {i + 1}
-              </span>
-              <span className="text-sm font-semibold">{s.titulo}</span>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-4 text-sm text-rotary-gray">
-          Cada sección tiene 15 afirmaciones. Marca las que consideres verdaderas. Toma
-          alrededor de 10 minutos.
-        </p>
-        <div className="mt-6 text-center">
-          <ButtonLink href="/encuesta" variant="gold" className="text-lg px-8 py-3">
-            Comenzar la encuesta
-          </ButtonLink>
-        </div>
-      </Card>
-      <p className="mt-6 text-center text-xs text-rotary-gray">
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {APPS.map((app) => (
+          <Link
+            key={app.href}
+            href={app.href}
+            className="group flex items-center gap-4 rounded-2xl bg-white p-5 shadow-sm border border-rotary-gray-mid active:scale-[0.98] transition-transform hover:border-rotary-azure sm:flex-col sm:items-start sm:gap-3 sm:p-6"
+          >
+            <span
+              className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-white sm:h-20 sm:w-20 ${app.color} ${
+                app.color === "bg-rotary-gold" ? "text-rotary-blue-dark" : ""
+              }`}
+            >
+              {app.icono}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-lg font-bold text-rotary-blue sm:text-xl">{app.titulo}</span>
+              <span className="mt-0.5 block text-sm text-rotary-gray leading-snug">{app.descripcion}</span>
+            </span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0 text-rotary-gray-mid group-hover:text-rotary-azure sm:hidden">
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </Link>
+        ))}
+      </div>
+
+      <p className="mt-8 text-center text-xs text-rotary-gray">
         <a href="/admin" className="hover:underline">
           Acceso para la directiva
         </a>

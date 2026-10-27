@@ -12,8 +12,8 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: `${TITULO_ENCUESTA} · ${CLUB}`,
-  description: `${TITULO_ENCUESTA} del ${CLUB}`,
+  title: CLUB,
+  description: `Aplicaciones del ${CLUB}: ${TITULO_ENCUESTA} y Ver para aprender`,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -29,16 +29,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <p className="text-rotary-blue font-bold leading-tight truncate">
                 {CLUB}
               </p>
-              <p className="text-rotary-gray text-sm leading-tight">
-                {TITULO_ENCUESTA}
-              </p>
+              <p className="text-rotary-gray text-xs sm:text-sm leading-tight">Rotary International</p>
             </div>
           </div>
         </header>
         <main className="flex-1">{children}</main>
         <footer className="no-print text-center text-xs text-rotary-gray py-6">
-          {CLUB} · Basado en la Encuesta sobre la Salud del Club de Rotary
-          International
+          {CLUB} · Rotary International
         </footer>
       </body>
     </html>
