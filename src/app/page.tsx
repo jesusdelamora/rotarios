@@ -23,9 +23,11 @@ const APPS = [
     color: "bg-rotary-gold",
     icono: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-10 w-10 sm:h-12 sm:w-12">
-        <rect x="3" y="5" width="18" height="13" rx="2" />
-        <path d="M10 9l5 2.5-5 2.5z" fill="currentColor" stroke="none" />
-        <path d="M8 21h8" />
+        <circle cx="7" cy="14" r="3.5" />
+        <circle cx="17" cy="14" r="3.5" />
+        <path d="M10.5 14h3" />
+        <path d="M3.5 14l2-6h2" />
+        <path d="M20.5 14l-2-6h-2" />
       </svg>
     ),
   },
