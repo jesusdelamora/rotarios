@@ -24,3 +24,42 @@ export const resumenes = sqliteTable("resumenes", {
 
 export type RespuestaRow = typeof respuestas.$inferSelect;
 export type ResumenRow = typeof resumenes.$inferSelect;
+
+/* ---------- Ver para aprender ---------- */
+
+export const vpaAccesos = sqliteTable("vpa_accesos", {
+  rol: text("rol").primaryKey(), // rotario | maestro | papa
+  clave: text("clave").notNull(),
+  actualizadoEn: integer("actualizado_en", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const vpaAlumnos = sqliteTable("vpa_alumnos", {
+  id: text("id").primaryKey(),
+  folio: text("folio").notNull().unique(),
+  nombre: text("nombre").notNull(),
+  edad: integer("edad"),
+  escuela: text("escuela"),
+  telefono: text("telefono"),
+  tutor: text("tutor"),
+  evaluador: text("evaluador"),
+  creadoPor: text("creado_por").notNull(), // rol
+  creadoEn: integer("creado_en", { mode: "timestamp_ms" }).notNull(),
+  actualizadoEn: integer("actualizado_en", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const vpaCuestionarios = sqliteTable("vpa_cuestionarios", {
+  id: text("id").primaryKey(),
+  alumnoId: text("alumno_id").notNull(),
+  fecha: integer("fecha", { mode: "timestamp_ms" }).notNull(),
+  evaluador: text("evaluador"),
+  /** JSON: (boolean | null)[20] */
+  respuestas: text("respuestas").notNull(),
+  /** JSON: AgudezaVisual */
+  agudeza: text("agudeza").notNull(),
+  observaciones: text("observaciones"),
+  creadoPor: text("creado_por").notNull(), // rol
+  creadoEn: integer("creado_en", { mode: "timestamp_ms" }).notNull(),
+});
+
+export type VpaAlumnoRow = typeof vpaAlumnos.$inferSelect;
+export type VpaCuestionarioRow = typeof vpaCuestionarios.$inferSelect;

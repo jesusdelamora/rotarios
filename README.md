@@ -1,7 +1,12 @@
-# Encuesta sobre la Salud del Club — Club Rotarios Saltillo Industrial
+# Club Rotarios Saltillo Industrial — apps
 
-Aplicación web para aplicar la *Encuesta sobre la Salud del Club* de Rotary International
-(5 secciones × 15 afirmaciones + comentarios), ver resultados y generar resúmenes.
+Aplicación web con dos módulos:
+
+- **Encuesta**: la *Encuesta sobre la Salud del Club* de Rotary International
+  (5 secciones × 15 afirmaciones + comentarios), con panel de resultados y resúmenes.
+- **Ver para aprender**: programa de salud visual pediátrica. Registro de alumnos (datos generales)
+  y cuestionarios de signos y síntomas (20 preguntas), agudeza visual y observaciones, con acceso por
+  tipo de usuario (rotario, maestro, padre/madre/tutor) mediante claves compartidas, sin correos.
 
 ## Stack
 
@@ -22,13 +27,31 @@ Rutas:
 
 | Ruta | Descripción |
 |---|---|
-| `/` | Portada pública |
-| `/encuesta` | Formulario (5 pasos) |
+| `/` | Inicio con los dos módulos |
+| `/encuesta` | Portada de la encuesta |
+| `/encuesta/responder` | Formulario (5 pasos) |
 | `/admin` | Panel de la directiva (password) |
 | `/admin/seccion/[id]` | Detalle por sección |
 | `/admin/respuestas` | Lista y detalle de respuestas |
 | `/admin/resumenes` | Generar y consultar resúmenes (imprimibles a PDF) |
 | `/api/admin/export` | Exportar todas las respuestas a CSV |
+| `/aprender` | Ver para aprender: entrada con clave (y folio para padres) |
+| `/aprender/alumnos` | Lista, alta y edición de alumnos (rotario y maestro) |
+| `/aprender/alumnos/[id]` | Ficha del alumno y sus cuestionarios |
+| `/aprender/alumnos/[id]/cuestionario/nuevo` | Nuevo cuestionario |
+| `/aprender/ajustes` | Claves de acceso por tipo de usuario (solo rotario) |
+
+### Accesos de Ver para aprender
+
+Tres claves compartidas, una por tipo de usuario, que se cambian en `/aprender/ajustes`:
+
+| Usuario | Qué puede hacer | Clave inicial |
+|---|---|---|
+| Rotario | Todo: alumnos, cuestionarios, agudeza visual, eliminar, ajustes | `rotario2026` |
+| Maestro | Registrar y editar alumnos, llenar cuestionarios con agudeza visual | `maestro2026` |
+| Padre, madre o tutor | Solo su alumno (entra con la clave + el **folio** del alumno). Llena el cuestionario de signos y síntomas | `papa2026` |
+
+El folio es un código de 6 letras y números que se genera al registrar al alumno; la escuela se lo entrega a la familia.
 
 Para empezar de cero en local: borra `local.db`; las tablas se vuelven a crear solas (o corre `npm run db:push`).
 

@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
 import * as schema from "./schema";
+import { CLAVES_INICIALES } from "@/data/vpa";
 
 const url = process.env.TURSO_DATABASE_URL ?? "file:local.db";
 const authToken = process.env.TURSO_AUTH_TOKEN;
@@ -38,6 +39,46 @@ export function ensureSchema(): Promise<void> {
             total_respuestas INTEGER NOT NULL,
             contenido TEXT NOT NULL
           )`,
+          // ---- Ver para aprender ----
+          `CREATE TABLE IF NOT EXISTS vpa_accesos (
+            rol TEXT PRIMARY KEY,
+            clave TEXT NOT NULL,
+            actualizado_en INTEGER NOT NULL
+          )`,
+          `CREATE TABLE IF NOT EXISTS vpa_alumnos (
+            id TEXT PRIMARY KEY,
+            folio TEXT NOT NULL UNIQUE,
+            nombre TEXT NOT NULL,
+            edad INTEGER,
+            escuela TEXT,
+            telefono TEXT,
+            tutor TEXT,
+            evaluador TEXT,
+            creado_por TEXT NOT NULL,
+            creado_en INTEGER NOT NULL,
+            actualizado_en INTEGER NOT NULL
+          )`,
+          `CREATE TABLE IF NOT EXISTS vpa_cuestionarios (
+            id TEXT PRIMARY KEY,
+            alumno_id TEXT NOT NULL,
+            fecha INTEGER NOT NULL,
+            evaluador TEXT,
+            respuestas TEXT NOT NULL,
+            agudeza TEXT NOT NULL,
+            observaciones TEXT,
+            creado_por TEXT NOT NULL,
+            creado_en INTEGER NOT NULL
+          )`,
+          `CREATE INDEX IF NOT EXISTS vpa_cuestionarios_alumno ON vpa_cuestionarios (alumno_id)`,
+          // Claves de acceso iniciales (no sobrescribe las que ya existan)
+          {
+            sql: `INSERT OR IGNORE INTO vpa_accesos (rol, clave, actualizado_en) VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)`,
+            args: [
+              "rotario", CLAVES_INICIALES.rotario, Date.now(),
+              "maestro", CLAVES_INICIALES.maestro, Date.now(),
+              "papa", CLAVES_INICIALES.papa, Date.now(),
+            ],
+          },
         ],
         "write",
       )

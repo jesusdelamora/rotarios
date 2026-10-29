@@ -104,3 +104,38 @@ Estado: fases 1–5 terminadas (11 sep 2026). Producción en https://rotarios-cr
 - ¿Se permite responder anónimo o siempre se pide nombre?
 - ¿El logo de Rotary se usa tal cual o el club tiene un logo propio con su nombre?
 - ¿Hace falta bloquear respuestas duplicadas (por ejemplo, una por persona con un código)?
+
+---
+
+# Módulo 2 — Ver para aprender (salud visual pediátrica)
+
+Basado en la hoja "Viendo por la Infancia" (Fundación Aún hay mucho por ver AC / Colegio Mexicano de Optometría Pediátrica).
+
+## Accesos (sin correos)
+
+Tres claves compartidas guardadas en la base (`vpa_accesos`), editables por el rotario en Ajustes:
+
+| Rol | Entra con | Permisos |
+|---|---|---|
+| Rotario | clave | Todo, incluidos eliminar y cambiar claves |
+| Maestro | clave | Alta/edición de alumnos, cuestionarios con agudeza visual y observaciones |
+| Papá / mamá / tutor | clave + folio del alumno | Solo su alumno; llena el cuestionario de signos y síntomas (sin agudeza visual) |
+
+Sesión: cookie firmada (HMAC) con rol y, para padres, el id del alumno. 7 días.
+
+## Datos
+
+- `vpa_alumnos` — datos generales: folio (6 caracteres, único), nombre, edad, escuela, teléfono, tutor, evaluador.
+- `vpa_cuestionarios` — uno o varios por alumno: fecha, evaluador, 20 respuestas Sí/No/sin contestar,
+  agudeza visual (lejana y cercana × OD/OI/AO), observaciones, quién lo creó.
+
+## Estado (28 oct 2026, rama `feature/inicio-apps`)
+
+Hecho: login por clave, lista/búsqueda de alumnos, alta y edición, ficha con historial de cuestionarios,
+formulario de cuestionario (móvil primero), vista imprimible del cuestionario, ajustes de claves, permisos por rol.
+
+Pendientes sugeridos:
+- Editar un cuestionario ya guardado.
+- Resumen por escuela (cuántos alumnos, cuántos con 5+ síntomas, agudeza fuera de rango).
+- Exportar alumnos y cuestionarios a CSV.
+- Imprimir ficha con el folio para entregar a la familia.

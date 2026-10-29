@@ -19,7 +19,7 @@ const APPS = [
   {
     href: "/aprender",
     titulo: "Ver para aprender",
-    descripcion: "Videos y materiales para conocer más sobre Rotary.",
+    descripcion: "Salud visual pediátrica: registro de alumnos y cuestionarios.",
     color: "bg-rotary-gold",
     icono: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-10 w-10 sm:h-12 sm:w-12">
