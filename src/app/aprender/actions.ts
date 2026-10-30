@@ -5,36 +5,12 @@ import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db, ensureSchema } from "@/db";
-import { vpaAccesos, vpaAlumnos, vpaCuestionarios } from "@/db/schema";
-import { assertVpa, clearSesionVpa, puedeVerAlumno, setSesionVpa } from "@/lib/vpa-auth";
-import { getAlumno, getAlumnoPorFolio, rolPorClave } from "@/lib/vpa-queries";
-import { AGUDEZA_VACIA, TOTAL_PREGUNTAS_VPA, generarFolio, type AgudezaVisual, type RespuestasVpa, type RolVpa } from "@/data/vpa";
+import { usuarioAlumnos, vpaAlumnos, vpaCuestionarios } from "@/db/schema";
+import { assertVpa, puedeVerAlumno } from "@/lib/vpa-auth";
+import { getAlumno } from "@/lib/vpa-queries";
+import { AGUDEZA_VACIA, TOTAL_PREGUNTAS_VPA, generarFolio, type AgudezaVisual, type RespuestasVpa } from "@/data/vpa";
 
 type Estado = { error?: string } | undefined;
-
-/* ---------- Sesión ---------- */
-
-export async function loginVpa(_prev: Estado, formData: FormData): Promise<Estado> {
-  const clave = String(formData.get("clave") ?? "").trim();
-  const folio = String(formData.get("folio") ?? "").trim().toUpperCase();
-  const rol = await rolPorClave(clave);
-  if (!rol) return { error: "Clave de acceso incorrecta." };
-
-  if (rol === "papa") {
-    if (!folio) return { error: "Como padre, madre o tutor necesitas el folio del alumno." };
-    const alumno = await getAlumnoPorFolio(folio);
-    if (!alumno) return { error: "No encontramos un alumno con ese folio. Revísalo con la escuela." };
-    await setSesionVpa({ rol, alumnoId: alumno.id });
-    redirect(`/aprender/alumnos/${alumno.id}`);
-  }
-  await setSesionVpa({ rol });
-  redirect("/aprender/alumnos");
-}
-
-export async function logoutVpa() {
-  await clearSesionVpa();
-  redirect("/aprender");
-}
 
 /* ---------- Alumnos ---------- */
 
@@ -62,6 +38,9 @@ export async function crearAlumno(_prev: Estado, formData: FormData): Promise<Es
   const s = await assertVpa(["rotario", "maestro"]);
   const parsed = leerAlumno(formData);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
+  if (formData.get("aviso") !== "on") {
+    return { error: "Confirma que el padre, madre o tutor conoce el aviso de privacidad y autoriza el registro." };
+  }
   const d = parsed.data;
   await ensureSchema();
 
@@ -81,7 +60,9 @@ export async function crearAlumno(_prev: Estado, formData: FormData): Promise<Es
         telefono: d.telefono || null,
         tutor: d.tutor || null,
         evaluador: d.evaluador || null,
+        avisoAceptadoEn: ahora,
         creadoPor: s.rol,
+        creadoPorNombre: s.nombre,
         creadoEn: ahora,
         actualizadoEn: ahora,
       });
@@ -127,6 +108,7 @@ export async function eliminarAlumno(formData: FormData) {
   if (!id) return;
   await ensureSchema();
   await db.delete(vpaCuestionarios).where(eq(vpaCuestionarios.alumnoId, id));
+  await db.delete(usuarioAlumnos).where(eq(usuarioAlumnos.alumnoId, id));
   await db.delete(vpaAlumnos).where(eq(vpaAlumnos.id, id));
   revalidatePath("/aprender/alumnos");
   redirect("/aprender/alumnos");
@@ -172,6 +154,7 @@ export async function crearCuestionario(_prev: Estado, formData: FormData): Prom
     agudeza: JSON.stringify(agudeza),
     observaciones: observaciones || null,
     creadoPor: s.rol,
+    creadoPorNombre: s.nombre,
     creadoEn: new Date(),
   });
   await db.update(vpaAlumnos).set({ actualizadoEn: new Date() }).where(eq(vpaAlumnos.id, alumnoId));
@@ -188,29 +171,4 @@ export async function eliminarCuestionario(formData: FormData) {
   await db.delete(vpaCuestionarios).where(eq(vpaCuestionarios.id, id));
   revalidatePath(`/aprender/alumnos/${alumnoId}`);
   redirect(`/aprender/alumnos/${alumnoId}`);
-}
-
-/* ---------- Ajustes (claves de acceso) ---------- */
-
-export async function actualizarClaves(_prev: Estado, formData: FormData): Promise<Estado> {
-  await assertVpa(["rotario"]);
-  const valores: Record<RolVpa, string> = {
-    rotario: String(formData.get("rotario") ?? "").trim(),
-    maestro: String(formData.get("maestro") ?? "").trim(),
-    papa: String(formData.get("papa") ?? "").trim(),
-  };
-  for (const [rol, clave] of Object.entries(valores)) {
-    if (clave.length < 4) return { error: `La clave de ${rol} debe tener al menos 4 caracteres.` };
-  }
-  const set = new Set(Object.values(valores));
-  if (set.size !== 3) return { error: "Las tres claves deben ser diferentes entre sí." };
-  await ensureSchema();
-  for (const rol of ["rotario", "maestro", "papa"] as RolVpa[]) {
-    await db
-      .insert(vpaAccesos)
-      .values({ rol, clave: valores[rol], actualizadoEn: new Date() })
-      .onConflictDoUpdate({ target: vpaAccesos.rol, set: { clave: valores[rol], actualizadoEn: new Date() } });
-  }
-  revalidatePath("/aprender/ajustes");
-  return { error: undefined };
 }

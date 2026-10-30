@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { requireVpa, puedeVerAlumno } from "@/lib/vpa-auth";
 import { getAlumno, getCuestionariosDeAlumno } from "@/lib/vpa-queries";
+import { getTutoresDeAlumno } from "@/lib/usuarios";
 import { formatoFecha } from "@/lib/stats";
 import { NOMBRE_ROL, TOTAL_PREGUNTAS_VPA } from "@/data/vpa";
 import { Button, ButtonLink, Card, Pill } from "@/components/ui";
@@ -16,6 +17,7 @@ export default async function AlumnoPage({ params }: { params: Promise<{ id: str
   const alumno = await getAlumno(id);
   if (!alumno) notFound();
   const cuestionarios = await getCuestionariosDeAlumno(id);
+  const tutores = s.rol === "papa" ? [] : await getTutoresDeAlumno(id);
   const esPapa = s.rol === "papa";
 
   const datos: [string, string | null | undefined][] = [
@@ -24,16 +26,18 @@ export default async function AlumnoPage({ params }: { params: Promise<{ id: str
     ["Padre, madre o tutor(a)", alumno.tutor],
     ["Teléfono", alumno.telefono],
     ["Evaluador(a)", alumno.evaluador],
-    ["Registrado", `${formatoFecha(alumno.creadoEn)} · ${NOMBRE_ROL[alumno.creadoPor as keyof typeof NOMBRE_ROL] ?? alumno.creadoPor}`],
+    ["Registrado", `${formatoFecha(alumno.creadoEn)} · ${alumno.creadoPorNombre ?? NOMBRE_ROL[alumno.creadoPor as keyof typeof NOMBRE_ROL] ?? alumno.creadoPor}`],
+    ["Aviso de privacidad", alumno.avisoAceptadoEn ? `Aceptado ${formatoFecha(alumno.avisoAceptadoEn)}` : "Sin registro"],
+    ...(esPapa
+      ? []
+      : [["Cuentas de padres", tutores.length ? tutores.map((t) => `${t.nombre} (${t.usuario})`).join(", ") : "Ninguna vinculada"] as [string, string]]),
   ];
 
   return (
     <div className="space-y-4">
-      {!esPapa && (
-        <Link href="/aprender/alumnos" className="text-sm text-rotary-azure hover:underline">
-          ← Alumnos
-        </Link>
-      )}
+      <Link href="/aprender/alumnos" className="text-sm text-rotary-azure hover:underline">
+        ← {esPapa ? "Mis hijos" : "Alumnos"}
+      </Link>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-widest text-rotary-gold-dark font-semibold">Alumno</p>
@@ -88,7 +92,7 @@ export default async function AlumnoPage({ params }: { params: Promise<{ id: str
                       <span className="block font-semibold text-rotary-blue">{formatoFecha(c.fecha)}</span>
                       <span className="block text-xs text-rotary-gray truncate">
                         {c.evaluador ? `${c.evaluador} · ` : ""}
-                        {NOMBRE_ROL[c.creadoPor as keyof typeof NOMBRE_ROL] ?? c.creadoPor}
+                        {c.creadoPorNombre ?? NOMBRE_ROL[c.creadoPor as keyof typeof NOMBRE_ROL] ?? c.creadoPor}
                         {tieneAV ? " · con agudeza visual" : ""}
                       </span>
                     </span>

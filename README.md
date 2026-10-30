@@ -30,28 +30,38 @@ Rutas:
 | `/` | Inicio con los dos módulos |
 | `/encuesta` | Portada de la encuesta |
 | `/encuesta/responder` | Formulario (5 pasos) |
-| `/admin` | Panel de la directiva (password) |
+| `/admin` | Panel de resultados de la encuesta (rotarios) |
 | `/admin/seccion/[id]` | Detalle por sección |
 | `/admin/respuestas` | Lista y detalle de respuestas |
 | `/admin/resumenes` | Generar y consultar resúmenes (imprimibles a PDF) |
 | `/api/admin/export` | Exportar todas las respuestas a CSV |
-| `/aprender` | Ver para aprender: entrada con clave (y folio para padres) |
-| `/aprender/alumnos` | Lista, alta y edición de alumnos (rotario y maestro) |
+| `/login` | Inicio de sesión (usuario y contraseña) |
+| `/cuenta` | Mi cuenta: cambiar contraseña |
+| `/usuarios` | Administración de usuarios (solo rotario) |
+| `/aviso-de-privacidad` | Aviso de privacidad |
+| `/aprender` | Ver para aprender: portada |
+| `/aprender/alumnos` | Alumnos (rotario y maestro) o "Mis hijos" (padres) |
 | `/aprender/alumnos/[id]` | Ficha del alumno y sus cuestionarios |
 | `/aprender/alumnos/[id]/cuestionario/nuevo` | Nuevo cuestionario |
-| `/aprender/ajustes` | Claves de acceso por tipo de usuario (solo rotario) |
 
-### Accesos de Ver para aprender
+### Usuarios y login
 
-Tres claves compartidas, una por tipo de usuario, que se cambian en `/aprender/ajustes`:
+Un solo login (`/login`) con usuario y contraseña para toda la app. No usa correos: las cuentas las crea un rotario
+desde `/usuarios`, y cada persona puede cambiar su contraseña en `/cuenta`.
 
-| Usuario | Qué puede hacer | Clave inicial |
-|---|---|---|
-| Rotario | Todo: alumnos, cuestionarios, agudeza visual, eliminar, ajustes | `rotario2026` |
-| Maestro | Registrar y editar alumnos, llenar cuestionarios con agudeza visual | `maestro2026` |
-| Padre, madre o tutor | Solo su alumno (entra con la clave + el **folio** del alumno). Llena el cuestionario de signos y síntomas | `papa2026` |
+| Tipo | Qué puede hacer |
+|---|---|
+| Rotario | Todo: panel de la encuesta, alumnos, cuestionarios con agudeza visual, usuarios |
+| Maestro | Registrar y editar alumnos, llenar cuestionarios con agudeza visual |
+| Padre, madre o tutor | Solo sus hijos vinculados; llena el cuestionario de signos y síntomas |
 
-El folio es un código de 6 letras y números que se genera al registrar al alumno; la escuela se lo entrega a la familia.
+- **Primer usuario**: si la tabla de usuarios está vacía, la app crea `admin` (rotario) con la contraseña de
+  `ADMIN_PASSWORD` (o `admin2026` si no existe). Cámbiala en `/cuenta` la primera vez.
+- Las contraseñas se guardan con bcrypt. Tras 5 intentos fallidos la cuenta se bloquea 10 minutos.
+- Para vincular a un padre con su hijo, el rotario escribe el **folio** del alumno (código de 6 caracteres que se
+  genera al registrarlo) en la ficha del usuario.
+- Al registrar un alumno se exige confirmar que el tutor conoce el **aviso de privacidad** (`/aviso-de-privacidad`);
+  la fecha de aceptación queda guardada. Completa los datos de contacto del club en `src/data/privacidad.ts`.
 
 Para empezar de cero en local: borra `local.db`; las tablas se vuelven a crear solas (o corre `npm run db:push`).
 
@@ -59,7 +69,7 @@ Para empezar de cero en local: borra `local.db`; las tablas se vuelven a crear s
 
 | Variable | Descripción |
 |---|---|
-| `ADMIN_PASSWORD` | Password del panel `/admin` |
+| `ADMIN_PASSWORD` | Contraseña inicial del usuario `admin` (solo se usa al crear el primer usuario) |
 | `SESSION_SECRET` | Cadena aleatoria para firmar la cookie de sesión |
 | `TURSO_DATABASE_URL` | URL `libsql://…` de la base en Turso (en local se omite) |
 | `TURSO_AUTH_TOKEN` | Token de Turso (en local se omite) |

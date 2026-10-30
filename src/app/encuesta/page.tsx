@@ -34,8 +34,9 @@ export default function EncuestaIntro() {
         </div>
       </Card>
       <p className="mt-6 text-center text-xs text-rotary-gray">
-        <a href="/admin" className="hover:underline">
-          Acceso para la directiva
+        Tus respuestas se usan solo para mejorar el club.{" "}
+        <a href="/aviso-de-privacidad" className="underline">
+          Aviso de privacidad
         </a>
       </p>
     </div>

@@ -36,6 +36,18 @@ export function AlumnoForm({ alumno }: { alumno?: VpaAlumnoRow }) {
           <Input name="evaluador" defaultValue={alumno?.evaluador ?? ""} />
         </label>
       </div>
+      {!alumno && (
+        <label className="flex items-start gap-3 rounded-md bg-rotary-gray-light p-3 text-sm">
+          <input type="checkbox" name="aviso" required className="mt-1 h-5 w-5 shrink-0 accent-rotary-blue" />
+          <span>
+            El padre, madre o tutor(a) fue informado del{" "}
+            <a href="/aviso-de-privacidad" target="_blank" className="underline text-rotary-azure">
+              aviso de privacidad
+            </a>{" "}
+            y autoriza el registro del alumno y de sus datos de salud visual en este programa. *
+          </span>
+        </label>
+      )}
       {state?.error && <p className="text-sm font-semibold text-rotary-cranberry">{state.error}</p>}
       <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <ButtonLink href={alumno ? `/aprender/alumnos/${alumno.id}` : "/aprender/alumnos"} variant="outline">

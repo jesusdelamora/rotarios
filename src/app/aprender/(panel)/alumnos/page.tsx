@@ -7,27 +7,36 @@ import { ButtonLink, Card, Input } from "@/components/ui";
 export const dynamic = "force-dynamic";
 
 export default async function AlumnosPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  await requireVpa(["rotario", "maestro"]);
+  const s = await requireVpa(undefined, "/aprender/alumnos");
   const { q } = await searchParams;
-  const alumnos = await getAlumnos({ buscar: q });
+  const esPapa = s.rol === "papa";
+  const alumnos = await getAlumnos({ buscar: q, soloIds: esPapa ? s.alumnoIds : undefined });
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-rotary-blue">Alumnos</h1>
-        <ButtonLink href="/aprender/alumnos/nuevo" variant="gold">
-          + Registrar alumno
-        </ButtonLink>
+        <h1 className="text-2xl font-bold text-rotary-blue">{esPapa ? "Mis hijos" : "Alumnos"}</h1>
+        {!esPapa && (
+          <ButtonLink href="/aprender/alumnos/nuevo" variant="gold">
+            + Registrar alumno
+          </ButtonLink>
+        )}
       </div>
 
-      <form className="flex gap-2" action="/aprender/alumnos">
-        <Input name="q" defaultValue={q ?? ""} placeholder="Buscar por nombre, escuela o folio" />
-        <button className="rounded-md border border-rotary-blue px-4 font-semibold text-rotary-blue">Buscar</button>
-      </form>
+      {!esPapa && (
+        <form className="flex gap-2" action="/aprender/alumnos">
+          <Input name="q" defaultValue={q ?? ""} placeholder="Buscar por nombre, escuela o folio" />
+          <button className="rounded-md border border-rotary-blue px-4 font-semibold text-rotary-blue">Buscar</button>
+        </form>
+      )}
 
       {alumnos.length === 0 ? (
         <Card className="text-center text-rotary-gray">
-          {q ? "No hay alumnos que coincidan con la búsqueda." : "Aún no hay alumnos registrados."}
+          {esPapa
+            ? "Tu cuenta aún no tiene alumnos vinculados. Pide a la escuela o a un rotario que vincule a tu hijo o hija."
+            : q
+              ? "No hay alumnos que coincidan con la búsqueda."
+              : "Aún no hay alumnos registrados."}
         </Card>
       ) : (
         <ul className="space-y-2">

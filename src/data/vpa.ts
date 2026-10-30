@@ -6,22 +6,15 @@ export const VPA_PROGRAMA = "Programa de salud visual pediátrica";
 export type RolVpa = "rotario" | "maestro" | "papa";
 
 export const ROLES_VPA: { id: RolVpa; nombre: string; descripcion: string }[] = [
-  { id: "rotario", nombre: "Rotario", descripcion: "Acceso completo: alumnos, cuestionarios, agudeza visual y ajustes." },
-  { id: "maestro", nombre: "Maestro", descripcion: "Registra alumnos de su escuela y llena cuestionarios." },
-  { id: "papa", nombre: "Padre, madre o tutor", descripcion: "Llena el cuestionario de su hijo o hija usando el folio del alumno." },
+  { id: "rotario", nombre: "Rotario", descripcion: "Acceso completo: alumnos, cuestionarios, agudeza visual, usuarios y panel de la encuesta." },
+  { id: "maestro", nombre: "Maestro", descripcion: "Registra alumnos de su escuela y llena cuestionarios con agudeza visual." },
+  { id: "papa", nombre: "Padre, madre o tutor", descripcion: "Ve a sus hijos vinculados y llena el cuestionario de signos y síntomas." },
 ];
 
 export const NOMBRE_ROL: Record<RolVpa, string> = {
   rotario: "Rotario",
   maestro: "Maestro",
   papa: "Padre / madre / tutor",
-};
-
-/** Claves de acceso iniciales. Se guardan en la base al crear las tablas y se pueden cambiar en Ajustes. */
-export const CLAVES_INICIALES: Record<RolVpa, string> = {
-  rotario: process.env.VPA_CLAVE_ROTARIO || "rotario2026",
-  maestro: process.env.VPA_CLAVE_MAESTRO || "maestro2026",
-  papa: process.env.VPA_CLAVE_PAPA || "papa2026",
 };
 
 /** Cuestionario de signos y síntomas (20 preguntas, Sí / No). */

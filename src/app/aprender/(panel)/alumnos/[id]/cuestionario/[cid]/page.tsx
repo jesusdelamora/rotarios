@@ -138,7 +138,7 @@ export default async function CuestionarioPage({ params }: { params: Promise<{ i
       )}
 
       <p className="text-xs text-rotary-gray">
-        Registrado el {formatoFechaHora(c.creadoEn)} por {NOMBRE_ROL[c.creadoPor as keyof typeof NOMBRE_ROL] ?? c.creadoPor}.
+        Registrado el {formatoFechaHora(c.creadoEn)} por {c.creadoPorNombre ?? NOMBRE_ROL[c.creadoPor as keyof typeof NOMBRE_ROL] ?? c.creadoPor}.
       </p>
     </div>
   );

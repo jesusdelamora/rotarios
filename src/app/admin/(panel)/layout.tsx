@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import { logout } from "../actions";
+import { cerrarSesion } from "../../auth-actions";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
-  await requireAdmin();
+  const s = await requireAdmin();
   const links = [
+    { href: "/", label: "Inicio" },
     { href: "/admin", label: "Dashboard" },
     { href: "/admin/respuestas", label: "Respuestas" },
     { href: "/admin/resumenes", label: "Resúmenes" },
@@ -21,7 +22,13 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           <a href="/api/admin/export" className="px-3 py-2.5 text-sm font-semibold hover:bg-rotary-blue-dark whitespace-nowrap">
             Exportar CSV
           </a>
-          <form action={logout} className="ml-auto">
+          <Link href="/usuarios" className="px-3 py-2.5 text-sm font-semibold hover:bg-rotary-blue-dark whitespace-nowrap">
+            Usuarios
+          </Link>
+          <Link href="/cuenta" className="ml-auto px-2 py-2.5 text-xs whitespace-nowrap hover:underline">
+            {s.nombre}
+          </Link>
+          <form action={cerrarSesion}>
             <button className="px-3 py-2.5 text-sm hover:bg-rotary-blue-dark whitespace-nowrap">Salir</button>
           </form>
         </div>

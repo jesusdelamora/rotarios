@@ -25,13 +25,30 @@ export const resumenes = sqliteTable("resumenes", {
 export type RespuestaRow = typeof respuestas.$inferSelect;
 export type ResumenRow = typeof resumenes.$inferSelect;
 
-/* ---------- Ver para aprender ---------- */
+/* ---------- Usuarios (login unificado) ---------- */
 
-export const vpaAccesos = sqliteTable("vpa_accesos", {
-  rol: text("rol").primaryKey(), // rotario | maestro | papa
-  clave: text("clave").notNull(),
-  actualizadoEn: integer("actualizado_en", { mode: "timestamp_ms" }).notNull(),
+export const usuarios = sqliteTable("usuarios", {
+  id: text("id").primaryKey(),
+  usuario: text("usuario").notNull().unique(), // en minúsculas
+  nombre: text("nombre").notNull(),
+  rol: text("rol").notNull(), // rotario | maestro | papa
+  passwordHash: text("password_hash").notNull(),
+  activo: integer("activo", { mode: "boolean" }).notNull().default(true),
+  intentosFallidos: integer("intentos_fallidos").notNull().default(0),
+  bloqueadoHasta: integer("bloqueado_hasta", { mode: "timestamp_ms" }),
+  creadoEn: integer("creado_en", { mode: "timestamp_ms" }).notNull(),
+  ultimoAcceso: integer("ultimo_acceso", { mode: "timestamp_ms" }),
 });
+
+/** Vínculo padre/madre/tutor ↔ alumno. */
+export const usuarioAlumnos = sqliteTable("usuario_alumnos", {
+  usuarioId: text("usuario_id").notNull(),
+  alumnoId: text("alumno_id").notNull(),
+});
+
+export type UsuarioRow = typeof usuarios.$inferSelect;
+
+/* ---------- Ver para aprender ---------- */
 
 export const vpaAlumnos = sqliteTable("vpa_alumnos", {
   id: text("id").primaryKey(),
@@ -42,7 +59,9 @@ export const vpaAlumnos = sqliteTable("vpa_alumnos", {
   telefono: text("telefono"),
   tutor: text("tutor"),
   evaluador: text("evaluador"),
+  avisoAceptadoEn: integer("aviso_aceptado_en", { mode: "timestamp_ms" }),
   creadoPor: text("creado_por").notNull(), // rol
+  creadoPorNombre: text("creado_por_nombre"),
   creadoEn: integer("creado_en", { mode: "timestamp_ms" }).notNull(),
   actualizadoEn: integer("actualizado_en", { mode: "timestamp_ms" }).notNull(),
 });
@@ -58,6 +77,7 @@ export const vpaCuestionarios = sqliteTable("vpa_cuestionarios", {
   agudeza: text("agudeza").notNull(),
   observaciones: text("observaciones"),
   creadoPor: text("creado_por").notNull(), // rol
+  creadoPorNombre: text("creado_por_nombre"),
   creadoEn: integer("creado_en", { mode: "timestamp_ms" }).notNull(),
 });
 

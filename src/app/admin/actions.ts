@@ -1,45 +1,13 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db, ensureSchema } from "@/db";
 import { respuestas, resumenes } from "@/db/schema";
 import { assertAdmin } from "@/lib/auth";
-import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/session";
 import { getRespuestas } from "@/lib/queries";
 import { calcularEstadisticas } from "@/lib/stats";
-
-export async function login(_prev: { error?: string } | undefined, formData: FormData) {
-  const password = String(formData.get("password") ?? "").trim();
-  const esperado = (process.env.ADMIN_PASSWORD ?? "").trim();
-  if (!esperado) return { error: "ADMIN_PASSWORD no está configurado en el servidor." };
-  if (password !== esperado) return { error: "Password incorrecto." };
-
-  let token: string;
-  try {
-    token = await createSessionToken();
-  } catch (e) {
-    console.error("No se pudo crear la sesión:", e);
-    return { error: "El servidor no tiene configurado SESSION_SECRET. Revisa las variables de entorno en Vercel." };
-  }
-  const store = await cookies();
-  store.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: SESSION_MAX_AGE,
-  });
-  redirect("/admin");
-}
-
-export async function logout() {
-  const store = await cookies();
-  store.delete(SESSION_COOKIE);
-  redirect("/admin/login");
-}
 
 export async function eliminarRespuesta(formData: FormData) {
   await assertAdmin();

@@ -35,7 +35,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </header>
         <main className="flex-1">{children}</main>
         <footer className="no-print text-center text-xs text-rotary-gray py-6">
-          {CLUB} · Rotary International
+          {CLUB} · Rotary International ·{" "}
+          <Link href="/aviso-de-privacidad" className="hover:underline">
+            Aviso de privacidad
+          </Link>
         </footer>
       </body>
     </html>

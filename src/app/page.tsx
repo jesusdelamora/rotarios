@@ -68,9 +68,9 @@ export default function Home() {
       </div>
 
       <p className="mt-8 text-center text-xs text-rotary-gray">
-        <a href="/admin" className="hover:underline">
-          Acceso para la directiva
-        </a>
+        <Link href="/login" className="hover:underline">
+          Iniciar sesión
+        </Link>
       </p>
     </div>
   );

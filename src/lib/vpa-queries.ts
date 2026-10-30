@@ -1,32 +1,20 @@
-import { and, desc, eq, like, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, like, or, sql } from "drizzle-orm";
 import { db, ensureSchema } from "@/db";
-import { vpaAccesos, vpaAlumnos, vpaCuestionarios, type VpaAlumnoRow, type VpaCuestionarioRow } from "@/db/schema";
-import { AGUDEZA_VACIA, TOTAL_PREGUNTAS_VPA, type AgudezaVisual, type RespuestasVpa, type RolVpa } from "@/data/vpa";
+import { vpaAlumnos, vpaCuestionarios, type VpaAlumnoRow, type VpaCuestionarioRow } from "@/db/schema";
+import { AGUDEZA_VACIA, TOTAL_PREGUNTAS_VPA, type AgudezaVisual, type RespuestasVpa } from "@/data/vpa";
 
-export async function getClaves(): Promise<Record<RolVpa, string>> {
+export async function getAlumnos(opts?: {
+  buscar?: string;
+  /** Si se indica, solo estos alumnos (para padres). Lista vacía => sin resultados. */
+  soloIds?: string[];
+}): Promise<(VpaAlumnoRow & { cuestionarios: number })[]> {
   await ensureSchema();
-  const rows = await db.select().from(vpaAccesos);
-  const out = { rotario: "", maestro: "", papa: "" } as Record<RolVpa, string>;
-  for (const r of rows) out[r.rol as RolVpa] = r.clave;
-  return out;
-}
-
-export async function rolPorClave(clave: string): Promise<RolVpa | null> {
-  const claves = await getClaves();
-  const c = clave.trim();
-  if (!c) return null;
-  for (const rol of ["rotario", "maestro", "papa"] as RolVpa[]) {
-    if (claves[rol] && claves[rol] === c) return rol;
-  }
-  return null;
-}
-
-export async function getAlumnos(opts?: { buscar?: string }): Promise<(VpaAlumnoRow & { cuestionarios: number })[]> {
-  await ensureSchema();
+  if (opts?.soloIds && opts.soloIds.length === 0) return [];
   const q = opts?.buscar?.trim();
-  const where = q
-    ? or(like(vpaAlumnos.nombre, `%${q}%`), like(vpaAlumnos.escuela, `%${q}%`), like(vpaAlumnos.folio, `%${q.toUpperCase()}%`))
-    : undefined;
+  const conds = [];
+  if (q) conds.push(or(like(vpaAlumnos.nombre, `%${q}%`), like(vpaAlumnos.escuela, `%${q}%`), like(vpaAlumnos.folio, `%${q.toUpperCase()}%`)));
+  if (opts?.soloIds) conds.push(inArray(vpaAlumnos.id, opts.soloIds));
+  const where = conds.length ? and(...conds) : undefined;
   const rows = await db
     .select({
       alumno: vpaAlumnos,
