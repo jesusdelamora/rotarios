@@ -133,3 +133,38 @@ export async function quitarVinculo(formData: FormData) {
   revalidatePath(`/usuarios/${id}`);
   redirect(`/usuarios/${id}`);
 }
+
+// ---- Datos de prueba ----
+
+import { client } from "@/db";
+import { borrarDatosDemo, cargarDatosDemo, type CuentaDemo } from "@/lib/seed-demo";
+
+export type EstadoDemo = { error?: string; ok?: string; cuentas?: CuentaDemo[] } | undefined;
+
+export async function cargarDemo(): Promise<EstadoDemo> {
+  await assertSesion(["rotario"]);
+  await ensureSchema();
+  try {
+    const cuentas = await cargarDatosDemo(client);
+    revalidatePath("/usuarios");
+    revalidatePath("/aprender/alumnos");
+    return { ok: "Datos de prueba cargados. Guarda estas contraseñas: no se vuelven a mostrar.", cuentas };
+  } catch (e) {
+    console.error(e);
+    return { error: "No se pudieron cargar los datos de prueba." };
+  }
+}
+
+export async function borrarDemo(): Promise<EstadoDemo> {
+  await assertSesion(["rotario"]);
+  await ensureSchema();
+  try {
+    await borrarDatosDemo(client);
+    revalidatePath("/usuarios");
+    revalidatePath("/aprender/alumnos");
+    return { ok: "Datos de prueba eliminados." };
+  } catch (e) {
+    console.error(e);
+    return { error: "No se pudieron eliminar los datos de prueba." };
+  }
+}

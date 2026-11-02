@@ -91,15 +91,18 @@ esa área se marca como **Atender**. Entre 10 y 11.9 se marca **Mejorable**; 12 
 
 ## Datos de prueba
 
-`scripts/seed-demo.ts` crea tres cuentas de prueba (`rotario.demo`, `maestro.demo`, `papa.demo`), cinco alumnos
+`src/lib/seed-demo.ts` crea tres cuentas de prueba (`rotario.demo`, `maestro.demo`, `papa.demo`), cinco alumnos
 de la "Primaria Benito Juárez" y varios cuestionarios. Se puede repetir sin duplicar nada; en cada corrida genera
-contraseñas nuevas para las cuentas de prueba y las imprime en pantalla.
+contraseñas nuevas para las cuentas de prueba y las muestra una sola vez.
+
+- **Producción:** entra como rotario y usa los botones "Cargar datos de prueba" / "Borrar datos de prueba" al final
+  de `/usuarios`. Corre dentro de Vercel, donde sí existen las credenciales de Turso (son sensibles y no se pueden
+  descargar con `vercel env pull`).
+- **Local:**
 
 ```bash
-npm run seed:demo                                   # base local
-vercel env pull --environment production .env.production.local
-npm run seed:demo -- --env .env.production.local    # producción (Turso)
+npm run seed:demo             # carga en local.db
+npm run seed:demo -- --borrar # elimina los datos de prueba
 ```
 
-Con `--admin-password <nueva>` restablece además la contraseña del usuario `admin`. Desactiva o borra las cuentas
-de prueba desde `/usuarios` antes de usar la app con datos reales.
+Con `--admin-password <nueva>` el script restablece además la contraseña del usuario `admin`.

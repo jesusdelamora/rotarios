@@ -3,6 +3,7 @@ import { getUsuarios } from "@/lib/usuarios";
 import { NOMBRE_ROL } from "@/data/vpa";
 import { formatoFecha } from "@/lib/stats";
 import { ButtonLink, Card, Pill } from "@/components/ui";
+import { DatosDemo } from "./DatosDemo";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,7 @@ export default async function UsuariosPage() {
           </li>
         ))}
       </ul>
+      <DatosDemo hayDemo={lista.some((u) => u.usuario === "rotario.demo")} />
     </div>
   );
 }
