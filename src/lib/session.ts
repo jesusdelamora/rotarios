@@ -52,3 +52,39 @@ export async function verifySessionToken(token: string | undefined): Promise<boo
   }
   return diff === 0;
 }
+
+/* ---------- Tokens firmados genéricos (usados por "Ver para aprender") ---------- */
+
+function b64url(s: string): string {
+  return Buffer.from(s, "utf8").toString("base64url");
+}
+function unb64url(s: string): string {
+  return Buffer.from(s, "base64url").toString("utf8");
+}
+
+/** Crea un token "<payload-b64url>.<firma>" con expiración incluida en el payload. */
+export async function signPayload(payload: Record<string, unknown>, maxAgeSeconds = SESSION_MAX_AGE): Promise<string> {
+  const data = b64url(JSON.stringify({ ...payload, exp: Date.now() + maxAgeSeconds * 1000 }));
+  return `${data}.${await hmac(data)}`;
+}
+
+/** Verifica firma y expiración; devuelve el payload o null. */
+export async function verifyPayload<T extends Record<string, unknown>>(token: string | undefined): Promise<T | null> {
+  if (!token) return null;
+  const idx = token.lastIndexOf(".");
+  if (idx <= 0) return null;
+  const data = token.slice(0, idx);
+  const sig = token.slice(idx + 1);
+  const expected = await hmac(data);
+  if (expected.length !== sig.length) return null;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ sig.charCodeAt(i);
+  if (diff !== 0) return null;
+  try {
+    const obj = JSON.parse(unb64url(data)) as T & { exp?: number };
+    if (!obj.exp || obj.exp < Date.now()) return null;
+    return obj;
+  } catch {
+    return null;
+  }
+}

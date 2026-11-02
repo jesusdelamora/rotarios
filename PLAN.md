@@ -104,3 +104,41 @@ Estado: fases 1–5 terminadas (11 sep 2026). Producción en https://rotarios-cr
 - ¿Se permite responder anónimo o siempre se pide nombre?
 - ¿El logo de Rotary se usa tal cual o el club tiene un logo propio con su nombre?
 - ¿Hace falta bloquear respuestas duplicadas (por ejemplo, una por persona con un código)?
+
+---
+
+# Módulo 2 — Ver para aprender (salud visual pediátrica)
+
+Basado en la hoja "Viendo por la Infancia" (Fundación Aún hay mucho por ver AC / Colegio Mexicano de Optometría Pediátrica).
+
+## Accesos (usuario y contraseña, sin correos)
+
+Login unificado para toda la app (`/login`). Tabla `usuarios` en Turso con contraseña en bcrypt, rol y estado.
+El rotario crea cuentas, resetea contraseñas y desactiva usuarios desde `/usuarios`; cada quien cambia la suya en `/cuenta`.
+Primer usuario: `admin` con `ADMIN_PASSWORD`. Bloqueo de 10 min tras 5 intentos fallidos.
+
+| Rol | Permisos |
+|---|---|
+| Rotario | Todo, incluidos panel de la encuesta, usuarios y eliminar |
+| Maestro | Alta/edición de alumnos, cuestionarios con agudeza visual y observaciones |
+| Papá / mamá / tutor | Solo sus hijos vinculados (`usuario_alumnos`); llena el cuestionario de signos y síntomas |
+
+Sesión: cookie firmada (HMAC) con el id del usuario; en cada petición se confirma contra la base que sigue activo. 7 días.
+
+## Datos
+
+- `vpa_alumnos` — datos generales: folio (6 caracteres, único), nombre, edad, escuela, teléfono, tutor, evaluador.
+- `vpa_cuestionarios` — uno o varios por alumno: fecha, evaluador, 20 respuestas Sí/No/sin contestar,
+  agudeza visual (lejana y cercana × OD/OI/AO), observaciones, quién lo creó.
+
+## Estado (28 oct 2026, rama `feature/inicio-apps`)
+
+Hecho: login con usuario y contraseña, administración de usuarios, vínculo padre–alumno por folio, lista/búsqueda de alumnos,
+alta con consentimiento del aviso de privacidad, edición, ficha con historial de cuestionarios, formulario de cuestionario
+(móvil primero), vista imprimible, permisos por rol, aviso de privacidad (`/aviso-de-privacidad`).
+
+Pendientes sugeridos:
+- Editar un cuestionario ya guardado.
+- Resumen por escuela (cuántos alumnos, cuántos con 5+ síntomas, agudeza fuera de rango).
+- Exportar alumnos y cuestionarios a CSV.
+- Imprimir ficha con el folio para entregar a la familia.
