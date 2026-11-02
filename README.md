@@ -88,3 +88,18 @@ Producción: https://rotarios-crsi.vercel.app (proyecto `rotarios`, equipo dycea
 
 Como en el PDF original: si en una sección quedan **más de 5 casillas sin marcar** (promedio menor a 10 de 15),
 esa área se marca como **Atender**. Entre 10 y 11.9 se marca **Mejorable**; 12 o más, **Saludable**.
+
+## Datos de prueba
+
+`scripts/seed-demo.ts` crea tres cuentas de prueba (`rotario.demo`, `maestro.demo`, `papa.demo`), cinco alumnos
+de la "Primaria Benito Juárez" y varios cuestionarios. Se puede repetir sin duplicar nada; en cada corrida genera
+contraseñas nuevas para las cuentas de prueba y las imprime en pantalla.
+
+```bash
+npm run seed:demo                                   # base local
+vercel env pull --environment production .env.production.local
+npm run seed:demo -- --env .env.production.local    # producción (Turso)
+```
+
+Con `--admin-password <nueva>` restablece además la contraseña del usuario `admin`. Desactiva o borra las cuentas
+de prueba desde `/usuarios` antes de usar la app con datos reales.

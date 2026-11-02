@@ -18,7 +18,7 @@ export async function getAlumnos(opts?: {
   const rows = await db
     .select({
       alumno: vpaAlumnos,
-      cuestionarios: sql<number>`(SELECT count(*) FROM vpa_cuestionarios c WHERE c.alumno_id = ${vpaAlumnos.id})`,
+      cuestionarios: sql<number>`(SELECT count(*) FROM vpa_cuestionarios c WHERE c.alumno_id = vpa_alumnos.id)`,
     })
     .from(vpaAlumnos)
     .where(where)
