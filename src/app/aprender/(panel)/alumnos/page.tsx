@@ -46,16 +46,15 @@ export default async function AlumnosPage({ searchParams }: { searchParams: Prom
                 <Card className="flex items-center gap-3 hover:border-rotary-azure transition-colors py-3">
                   <span className="min-w-0 flex-1">
                     <span className="block font-bold text-rotary-blue truncate">{a.nombre}</span>
-                    <span className="block text-xs text-rotary-gray truncate">
-                      {a.escuela || "Sin escuela"}
-                      {a.edad != null && ` · ${a.edad} años`} · {formatoFecha(a.actualizadoEn)}
+                    <span className="block text-sm text-rotary-blue-dark truncate">{a.escuela || "Sin escuela"}</span>
+                    <span className="block text-xs text-rotary-gray">
+                      {a.edad != null && `${a.edad} años · `}
+                      {formatoFecha(a.actualizadoEn)}
                     </span>
                   </span>
-                  <span className="text-right shrink-0">
-                    <span className="block font-mono text-sm font-bold tracking-widest text-rotary-blue-dark">{a.folio}</span>
-                    <span className="block text-xs text-rotary-gray">
-                      {a.cuestionarios} cuestionario{a.cuestionarios === 1 ? "" : "s"}
-                    </span>
+                  <span className="text-right shrink-0 text-xs text-rotary-gray">
+                    <span className="block text-lg font-bold leading-tight text-rotary-blue-dark">{a.cuestionarios}</span>
+                    cuestionario{a.cuestionarios === 1 ? "" : "s"}
                   </span>
                 </Card>
               </Link>
