@@ -37,20 +37,20 @@ function agudeza(lejos: string, cerca: string) {
 
 const CUESTIONARIOS = [
   // Sofía: dos evaluaciones, la primera de la maestra con agudeza, la segunda de la mamá.
-  { id: "demo-c1", alumno: "demo-alumno-1", hace: 30, por: "demo-maestro", porNombre: "Laura Martínez (maestra)", evaluador: "Laura Martínez",
+  { id: "demo-c1", alumno: "demo-alumno-1", hace: 30, por: "demo-maestro", porNombre: "Laura Martínez", evaluador: "Laura Martínez",
     respuestas: respuestas([0, 2, 4, 8, 13, 14, 16, 18]), agudeza: agudeza("20/40", "20/30"),
     observaciones: "Se acerca mucho al cuaderno. Se sugiere valoración optométrica." },
-  { id: "demo-c2", alumno: "demo-alumno-1", hace: 3, por: "demo-papa", porNombre: "María Pérez (mamá)", evaluador: "María Pérez",
+  { id: "demo-c2", alumno: "demo-alumno-1", hace: 3, por: "demo-papa", porNombre: "María Pérez", evaluador: "María Pérez",
     respuestas: respuestas([0, 2, 8, 16]), agudeza: agudezaVacia, observaciones: null },
   // Mateo: sin síntomas.
-  { id: "demo-c3", alumno: "demo-alumno-2", hace: 30, por: "demo-maestro", porNombre: "Laura Martínez (maestra)", evaluador: "Laura Martínez",
+  { id: "demo-c3", alumno: "demo-alumno-2", hace: 30, por: "demo-maestro", porNombre: "Laura Martínez", evaluador: "Laura Martínez",
     respuestas: respuestas([15]), agudeza: agudeza("20/20", "20/20"), observaciones: "Sin hallazgos." },
   // Valeria: muchos síntomas, caso para canalizar.
   { id: "demo-c4", alumno: "demo-alumno-3", hace: 14, por: "demo-rotario", porNombre: "Rotario de prueba", evaluador: "Dr. Jorge Villarreal",
     respuestas: respuestas([0, 1, 2, 3, 4, 5, 6, 8, 9, 12, 13, 14, 16, 17, 18, 19]), agudeza: agudeza("20/70", "20/50"),
     observaciones: "Posible miopía. Canalizar a oftalmología pediátrica." },
   // Diego: cuestionario incompleto.
-  { id: "demo-c5", alumno: "demo-alumno-4", hace: 7, por: "demo-maestro", porNombre: "Laura Martínez (maestra)", evaluador: "Laura Martínez",
+  { id: "demo-c5", alumno: "demo-alumno-4", hace: 7, por: "demo-maestro", porNombre: "Laura Martínez", evaluador: "Laura Martínez",
     respuestas: respuestas([4, 5, 15], [17, 18, 19]), agudeza: agudeza("20/25", "20/20"), observaciones: null },
   // Camila: sin cuestionarios todavía.
 ];
@@ -59,15 +59,15 @@ export async function cargarDatosDemo(client: Client, log: (m: string) => void =
   const ahora = Date.now();
   const cuentas: CuentaDemo[] = [
     { usuario: "rotario.demo", nombre: "Rotario de prueba", rol: "rotario", password: clave("rotario") },
-    { usuario: "maestro.demo", nombre: "Laura Martínez (maestra)", rol: "maestro", password: clave("maestro") },
-    { usuario: "papa.demo", nombre: "María Pérez (mamá)", rol: "papa", password: clave("papa") },
+    { usuario: "maestro.demo", nombre: "Laura Martínez", rol: "maestro", password: clave("maestro") },
+    { usuario: "papa.demo", nombre: "María Pérez", rol: "papa", password: clave("papa") },
   ];
   const ids: Record<string, string> = { "rotario.demo": "demo-rotario", "maestro.demo": "demo-maestro", "papa.demo": "demo-papa" };
 
   for (const u of cuentas) {
     await client.execute({
       sql: `INSERT INTO usuarios (id, usuario, nombre, rol, password_hash, activo, intentos_fallidos, creado_en) VALUES (?, ?, ?, ?, ?, 1, 0, ?)
-            ON CONFLICT(usuario) DO UPDATE SET password_hash = excluded.password_hash, activo = 1, intentos_fallidos = 0, bloqueado_hasta = NULL`,
+            ON CONFLICT(usuario) DO UPDATE SET password_hash = excluded.password_hash, nombre = excluded.nombre, activo = 1, intentos_fallidos = 0, bloqueado_hasta = NULL`,
       args: [ids[u.usuario], u.usuario, u.nombre, u.rol, await hash(u.password, 10), ahora],
     });
     log(`cuenta   ${u.usuario.padEnd(14)} contraseña: ${u.password.padEnd(14)} (${u.rol})`);
@@ -78,7 +78,7 @@ export async function cargarDatosDemo(client: Client, log: (m: string) => void =
     const r = await client.execute({
       sql: `INSERT OR IGNORE INTO vpa_alumnos (id, folio, nombre, edad, escuela, telefono, tutor, evaluador, aviso_aceptado_en, creado_por, creado_por_nombre, creado_en, actualizado_en)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [a.id, a.folio, a.nombre, a.edad, ESCUELA, a.telefono, a.tutor, "Laura Martínez", registro, "demo-maestro", "Laura Martínez (maestra)", registro, registro],
+      args: [a.id, a.folio, a.nombre, a.edad, ESCUELA, a.telefono, a.tutor, "Laura Martínez", registro, "demo-maestro", "Laura Martínez", registro, registro],
     });
     log(`${r.rowsAffected ? "creado " : "existía"}  alumno ${a.folio} ${a.nombre}`);
   }

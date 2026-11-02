@@ -91,8 +91,7 @@ export default async function AlumnoPage({ params }: { params: Promise<{ id: str
                     <span className="min-w-0 flex-1">
                       <span className="block font-semibold text-rotary-blue">{formatoFecha(c.fecha)}</span>
                       <span className="block text-xs text-rotary-gray truncate">
-                        {c.evaluador ? `${c.evaluador} · ` : ""}
-                        {c.creadoPorNombre ?? NOMBRE_ROL[c.creadoPor as keyof typeof NOMBRE_ROL] ?? c.creadoPor}
+                        {c.evaluador || c.creadoPorNombre || NOMBRE_ROL[c.creadoPor as keyof typeof NOMBRE_ROL] || c.creadoPor}
                         {tieneAV ? " · con agudeza visual" : ""}
                       </span>
                     </span>
