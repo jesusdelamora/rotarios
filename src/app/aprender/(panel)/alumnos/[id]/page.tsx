@@ -30,7 +30,7 @@ export default async function AlumnoPage({ params }: { params: Promise<{ id: str
     ["Aviso de privacidad", alumno.avisoAceptadoEn ? `Aceptado ${formatoFecha(alumno.avisoAceptadoEn)}` : "Sin registro"],
     ...(esPapa
       ? []
-      : [["Cuentas de padres", tutores.length ? tutores.map((t) => `${t.nombre} (${t.usuario})`).join(", ") : "Ninguna vinculada"] as [string, string]]),
+      : [["Cuentas de padres", tutores.length ? tutores.map((t) => t.nombre).join(", ") : "Ninguna vinculada"] as [string, string]]),
   ];
 
   return (

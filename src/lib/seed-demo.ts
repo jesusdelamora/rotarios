@@ -75,12 +75,13 @@ export async function cargarDatosDemo(client: Client, log: (m: string) => void =
 
   const registro = ahora - 40 * DIA;
   for (const a of ALUMNOS) {
-    const r = await client.execute({
-      sql: `INSERT OR IGNORE INTO vpa_alumnos (id, folio, nombre, edad, escuela, telefono, tutor, evaluador, aviso_aceptado_en, creado_por, creado_por_nombre, creado_en, actualizado_en)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    await client.execute({
+      sql: `INSERT INTO vpa_alumnos (id, folio, nombre, edad, escuela, telefono, tutor, evaluador, aviso_aceptado_en, creado_por, creado_por_nombre, creado_en, actualizado_en)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET creado_por_nombre = excluded.creado_por_nombre, evaluador = excluded.evaluador`,
       args: [a.id, a.folio, a.nombre, a.edad, ESCUELA, a.telefono, a.tutor, "Laura Martínez", registro, "demo-maestro", "Laura Martínez", registro, registro],
     });
-    log(`${r.rowsAffected ? "creado " : "existía"}  alumno ${a.folio} ${a.nombre}`);
+    log(`alumno   ${a.folio} ${a.nombre}`);
   }
 
   for (const alumnoId of HIJOS_PAPA) {
@@ -90,12 +91,13 @@ export async function cargarDatosDemo(client: Client, log: (m: string) => void =
 
   for (const c of CUESTIONARIOS) {
     const fecha = ahora - c.hace * DIA;
-    const r = await client.execute({
-      sql: `INSERT OR IGNORE INTO vpa_cuestionarios (id, alumno_id, fecha, evaluador, respuestas, agudeza, observaciones, creado_por, creado_por_nombre, creado_en)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    await client.execute({
+      sql: `INSERT INTO vpa_cuestionarios (id, alumno_id, fecha, evaluador, respuestas, agudeza, observaciones, creado_por, creado_por_nombre, creado_en)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET creado_por_nombre = excluded.creado_por_nombre, evaluador = excluded.evaluador`,
       args: [c.id, c.alumno, fecha, c.evaluador, c.respuestas, c.agudeza, c.observaciones, c.por, c.porNombre, fecha],
     });
-    log(`${r.rowsAffected ? "creado " : "existía"}  cuestionario ${c.id}`);
+    log(`cuestionario ${c.id} (${c.alumno})`);
   }
 
   return cuentas;
